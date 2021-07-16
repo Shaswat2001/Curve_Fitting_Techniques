@@ -25,7 +25,7 @@ class RANSAC:
         if error==None:
             threshold=3*np.std(Y)/5
         else:
-            threshol=3*np.std(error)/5
+            threshold=3*np.std(error)/5
         
         consensus=[]
         while current_itr<no_iterations:
@@ -36,7 +36,6 @@ class RANSAC:
             Y_rand=Y[sample_idx]
             X_test=X[test_idx]
             Y_test=Y[test_idx]
-
             parameters=self.solve_model(X_rand,Y_rand)
             CS=[]
             for i in range(X_test.shape[0]):
@@ -49,13 +48,13 @@ class RANSAC:
             current_itr+=1
             no_iterations=math.log(1-prob_best)/math.log(1-prob_inlier**sample_size)
         
-        best_param=self.select_best(CS)
+        best_param=self.select_best(consensus)
 
         return best_param
 
     def make_prediction(self,parameter,X,Y):
 
-        Y_pred=np.sum(parameter*X)
-        error=np.abs(Y_pred,Y)
+        Y_pred=np.sum(parameter*X,axis=1).reshape(-1,1)
+        error=np.abs(Y_pred-Y)
 
         return Y_pred,error 
